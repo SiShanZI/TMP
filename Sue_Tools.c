@@ -1,4 +1,4 @@
-#include "Sue_Declare.h"
+#include "Sue_Hdr.h"
 
 int Sum(int a[N])
 {

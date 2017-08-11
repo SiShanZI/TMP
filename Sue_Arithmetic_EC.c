@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "Sue_Declare.h"
+#include "Sue_Hdr.h"
 
-void Sue_Arithmetic_EC(void)
+double Sue_Arithmetic_EC(void)
 {
 /*C[N] is a dynamic counter which records the number of each character(member of the character set) in your message.
   i, j & k are for the for structure.
@@ -15,12 +15,12 @@ void Sue_Arithmetic_EC(void)
   for(i = 0; i < MAX && (tmp = getchar()) != TAG; i++){msg[i] = tmp;}
 /*interval*/
   for(i = 0; i < N; i++){C[i] = 1;} /*initialization*/
-  for(i = 0, j = 0, left = 0, right = 1; msg[i] != '\0'; i++, C[j]++)
+  for(i = 0, left = 0, right = 1; msg[i] != '\0'; i++, C[j]++)
   {
-    j = Gps(msg[i]);
+    j = Gps_ec(msg[i]);
     step = (right - left)/Sum(C);
     for(k = 0; k < j; k++){left = left + C[k]*step;}
     right = left + C[j]*step;
   }
-  printf("%f\n%f\n", left, right);
+  return (left + right)/2;
 }
