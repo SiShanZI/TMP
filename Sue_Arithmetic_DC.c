@@ -2,7 +2,7 @@
 struct AI{int id; double l, r;};
 struct AI Split_Locate(double left, double right, int C[N], double Ciphertext);
 
-void Sue_Arithmetic_DC(double Ciphertext)
+void Sue_Arithmetic_DC(char Ciphertext[limit])
 {
 /*C[N] is a dynamic counter which records the number of each character(member of the character set) in your message.
   i is for the for structure.
@@ -24,6 +24,13 @@ void Sue_Arithmetic_DC(double Ciphertext)
     msg[i] = tmp;
   }
   printf("%s\n", msg);
+}
+
+double Stream(double left, double right, int C[N], char Ci[limit])
+{
+  double step, Intervals[N+1];
+  step = (right - left)/Sum(C);
+  for(i = 1, Intervals[0] = left, Intervals[N] = right; i < N; i++){Intervals[i] = Intervals[i-1] + C[i-1]*step;}
 }
 
 struct AI Split_Locate(double left, double right, int C[N], double Ciphertext)

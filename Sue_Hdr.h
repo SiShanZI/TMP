@@ -4,11 +4,13 @@
 
 int N, MAX, limit;
 char TAG, Terminator;
+struct Array{char Ac[600];};
 struct Accuracy{char o[600]; double l, r;};
-struct Accuracy Improve(double left, double right);
 
 int Sum(int a[N]);
 int Gps_ec(char ec);
 char Gps_dc(int dc);
-double Sue_Arithmetic_EC(void);
-void Sue_Arithmetic_DC(double Ciphertext);
+struct Array Sue_Arithmetic_EC(void);
+void Sue_Arithmetic_DC(char Ciphertext[limit]);
+struct Accuracy Improve(double left, double right);
+struct Array Tail(double left, double right);
