@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "Sue_Hdr.h"
 struct AI{int id; double l, r;};
 struct AI Split_Locate(double left, double right, int C[N], double Ciphertext);
@@ -16,7 +15,7 @@ void Sue_Arithmetic_DC(double Ciphertext)
 /*initialization*/
   for(i = 0; i < MAX; i++){msg[i] = '\0';}
   for(i = 0; i < N; i++){C[i] = 1;}
-/*interval*/
+/*decoding*/
   for(i = 0, left = 0, right = 1; i < MAX && tmp != Terminator; i++)
   {
     AI = Split_Locate(left, right, C, Ciphertext);
