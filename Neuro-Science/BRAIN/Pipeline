@@ -1,0 +1,2 @@
+dcm2nii  dcm2nii -d n -e n -r n -o t1_H/ t1_H/(-x Y, -g n)
+Size Z, T1_Pre.sh, DTI_Pre.sh, Co.sh, Par.sh, Diff.sh

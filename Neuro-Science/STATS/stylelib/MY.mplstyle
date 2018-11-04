@@ -1,0 +1,43 @@
+# figure
+figure.figsize: 6.4, 4.8 # 6.4, 4.8
+figure.dpi: 150 # 100
+
+
+# subplot
+figure.subplot.wspace: 0.4
+figure.subplot.hspace: 0.6
+
+
+# save
+savefig.dpi: 300
+savefig.format: png # png
+
+
+# font
+font.family: sans-serif # serif, sans-serif, cursive, fantasy, monospace
+font.size: 10
+font.weight: 550 # 100 ~ 900
+font.style: normal # normal, italic, oblique
+
+
+# axes
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: False
+axes.linewidth: 1.5
+axes.titlesize: 20
+axes.titlepad:  15
+axes.labelsize: large
+
+
+# tick
+xtick.major.width: 1.5
+ytick.major.width: 1.5
+xtick.minor.visible: False
+ytick.minor.visible: False
+
+
+# legend
+legend.handlelength: 1.5
+legend.handleheight: 0.5
+legend.labelspacing: 0.2
