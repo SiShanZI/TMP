@@ -1,0 +1,257 @@
+--SQL
+CREATE TABLE orders (id INTEGER, userid INTEGER, name VARCHAR(32), price FLOAT);
+INSERT INTO orders VALUES (1, 1, 'qq', 1);
+DELETE FROM orders WHERE id=1;
+UPDATE orders SET userid=9 WHERE id=1;
+SELECT * FROM orders WHERE userid=1;
+SELECT COUNT(*) FROM (SELECT * FROM orders WHERE userid=1);
+TRUNCATE TABLE orders;
+ALTER TABLE ... RENAME COLUMN ... TO ...;
+ALTER TABLE ... RENAME TO ...;
+--
+SELECT * FROM USER_CONS_COLUMNS WHERE TABLE_NAME = 'ORDERS'; (Oracle)
+ALTER TABLE ORDERS DROP CONSTRAINT SYS_C0011094; (Oracle)
+--slow sql, a big table is needed
+SELECT MAX(id) FROM orders;
+SELECT COUNT(DISTINCT userid) FROM orders;
+
+
+--Pg
+--CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+--SELECT uuid_generate_v1();
+--add gradually
+--$2 per userid, $1 user adding per running, $3 $1 * $2 per unit
+CREATE OR REPLACE FUNCTION func(INTEGER, INTEGER, INTEGER) RETURNS VOID AS $$
+DECLARE
+  --end1 INTEGER := 5;
+  --end2 INTEGER := 2;
+BEGIN
+FOR i IN 1..$1 LOOP
+FOR j IN 1..$2 LOOP
+  INSERT INTO orders VALUES (@j::INTEGER + (@i::INTEGER - 1) * $2 + ($3 - 1) * $1 * $2, @i::INTEGER + ($3 - 1) * $1, 'OPPO', 9999);
+  --cast(@j AS INTEGER)
+END LOOP;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+--run
+SELECT func(200, 10000, 1);
+
+
+--Pg
+--add once
+--$2 per userid, $1 user adding per running
+CREATE OR REPLACE FUNCTION func(INTEGER, INTEGER) RETURNS VOID AS $$
+DECLARE
+  --end1 INTEGER := 5;
+  --end2 INTEGER := 2;
+BEGIN
+FOR i IN 1..$1 LOOP
+FOR j IN 1..$2 LOOP
+  INSERT INTO orders VALUES (@j::INTEGER + (@i::INTEGER - 1) * $2, @i::INTEGER, 'VIVO', 9999);
+  --cast(@j AS INTEGER)
+END LOOP;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+--run
+SELECT func(200, 10000);
+
+
+--Oracle
+--add gradually
+--$2 per userid, $1 user adding per running, $3 $1 * $2 per unit
+CREATE OR REPLACE FUNCTION func(end1 INTEGER, end2 INTEGER, end3 INTEGER) RETURN INTEGER AS
+BEGIN
+FOR i IN 1..end1 LOOP
+FOR j IN 1..end2 LOOP
+  INSERT INTO orders VALUES (j + (i - 1) * end2 + (end3 - 1) * end1 * end2, i + (end3 - 1) * end1, 'OPPO', 9999);
+END LOOP;
+END LOOP;
+RETURN 0;
+END;
+--run
+DECLARE
+BEGIN
+  dbms_output.put_line(func(200, 10000, 1));
+END;
+
+
+--Oracle
+--add once
+--$2 per userid, $1 user adding per running
+CREATE OR REPLACE FUNCTION func(end1 INTEGER, end2 INTEGER) RETURN INTEGER AS
+BEGIN
+FOR i IN 1..end1 LOOP
+FOR j IN 1..end2 LOOP
+  INSERT INTO orders VALUES (j + (i - 1) * end2, i, 'VIVO', 9999);
+END LOOP;
+END LOOP;
+RETURN 0;
+END;
+--run
+DECLARE
+BEGIN
+  dbms_output.put_line(func(200, 10000));
+END;
+
+
+--Redis
+HGETALL user:1001
+HMSET user:1001 name "Mary Jones" password "hidden" email "mjones@example.com"
+SMEMBERS KEY_SET
+FLUSHDB, FLUSHALL
+SELECT INDEX
+KEYS *
+
+
+--git
+ssh-keygen
+git config
+git clone -b dev git@; git checkout
+git pull; git push
+git status
+git add -A; git commit --message ""
+
+
+--maven
+--cd where there is your pom.xml
+mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+--multi-modules
+rm -rf src; update pom.xml.<packaging>jar</packaging> to <packaging>pom</packaging>; generate your module
+mvn clean compile, test, package, install
+mvn install:install-file -Dfile=.../ojdbc8.jar -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=18.3.0 -Dpackaging=jar
+java -jar target ...
+
+
+--docker
+--config: registry-mirror: https://registry.docker-cn.com
+--        insecure-registries: 172.30.0.0/16
+docker search ubuntu
+docker images
+docker ps -a
+docker run -dit ubuntu /bin/bash
+docker attach -it <container-id> /bin/bash
+docker exec -it <container-id> /bin/bash -- new terminal
+docker -H tcp://localhost:2375 run -d -p 8888:8888 ubuntu-with-go-server /WDIR/server
+docker save -o <target-path> <source-image>
+docker load
+--dockerfile
+docker build -t new_name PATH_build_context -f your_dockerfile
+docker commit old_name new_name
+docker history ubuntu
+FROM, MAINTAINER, USER, WORKDIR, EXPOSE, CMD
+COPY, ENV, RUN
+
+
+--GO
+cd $GOPATH/src
+git clone --depth 1 https://github.com/golang/tools.git golang.org/x/tools
+GOOS=linux GOARCH=amd64 go build server.go
+
+
+--openshift
+--minishift
+--@deprecated
+minishift config view, get, set, unset
+minishift config set vm-driver hyperv
+                 set hyperv-virtual-switch "External VM Switch"
+                 set registry-mirror registry.docker-cn.com
+minishift start, stop
+minishift openshift restart
+ssh -i C:/Users/SUE/.minishift/machines/minishift/id_rsa dockerroot@192.168.43.209
+minishift console
+--oc, openshift client
+eval $(minishift oc-env)
+oc login $(minishift ip):8443 --insecure-skip-tls-verify
+oc new-app, expose
+minishift openshift service nodejs-ex --in-browser
+--@deprecated
+
+
+--openshift
+--oc
+oc cluster up, down
+--router
+--router is a haproxy/f5... in a container with service, dc...
+--router needs a service account to contact the master
+--node selector, router shards
+oc login (-u system:admin)
+oc get node/pod/route...
+oc describe node/pod/route
+oc get pod -n default
+oc project <project-name>
+--config router service account
+oc adm policy add-scc-to-user hostnetwork -z router (system:serviceaccount:default:router)
+oc adm policy add-cluster-role-to-user cluster-reader -z router --for router shards
+--create router
+oc adm router --dry-run
+oc adm router <router-name> --service-account=router
+                            --replicas=1
+                            --images=
+                            --selector= --oc label node <node-ip> "router=first" (key=value)
+                            --max-connections=20000 --ROUTER_MAX_CONNECTIONS
+                            --router-canonical-hostname=<router-hostname>
+                            --host-network=false
+oc scale dc/router --replicas=0
+--customizing the router service ports
+oc edit dc/router
+oc set env --list
+oc set env dc/router ROUTER_SERVICE_HTTP_PORT=10080  --/sbin/iptables -A INPUT -p tcp --dport 10080 -j ACCEPT
+                     ROUTER_SERVICE_HTTPS_PORT=10443
+--router shards, namespace & route labels
+oc new-project p1
+oc create -f route1.yaml
+oc set env dc/<router-name> NAMESPACE_LABELS="router=r1"
+oc set env dc/<router-name> ROUTE_LABELS="router=r1"
+oc label route <route-name> "router=r1"
+oc label namespace <project-name> "router=r1"
+oc describe route/<route-name>
+--
+oc adm router --dry-run -o yaml
+--get router ip
+oc get pods
+oc get pods <router-pod-name> --template={{.status.hostIP}}
+--secure
+HAProxy Strict SNI --strict-sni, TLS Ciphers --ciphers (openssl ciphers)
+Mutual TLS Authentication
+
+
+--shell
+sudo su - (in case you forget your root password); su - root; passwd
+adduser ...; adduser user group; userdel -r ...; id; whoami; groups; cat /etc/group; cat /etc/passwd
+chown user file; chgrp group file
+systemctl get-default, isolate
+systemctl set-default multi-user.target, graphical.target
+ls -lt -h
+scp <source-path> <user@target-ip>:<target-path>
+ssh -qfND 9999 <user>@<vps-ip> -p <ssh-port>
+--port
+lsof -i:22 --listen
+telnet <ip> <port> --only TCP
+nc -uv <ip> <port> --also UDP, support multi-port
+nmap, netstat
+/sbin/iptables -L
+-A OS_FIREWALL_ALLOW -p udp -m state --state NEW -m udp --dport 514 -j ACCEPT --/etc/sysconfig/iptables
+
+
+--Keepalived, HAProxy, rsyslog, logrotate, cron
+log <log-server-ip>:514 local3 warning; log global --/etc/haproxy/haproxy.cfg, global, defaults
+$ModLoad imudp; $UDPServerAddress *; $UDPServerRun 514 --/etc/rsyslog.conf
+local3.* /var/lib/.../haproxy.log --/etc/rsyslog.d/haproxy.conf
+/var/lib/ose/haproxy/haproxy.log { --/etc/logrotate.d/haproxy
+    daily
+    maxsize 1M
+    rotate 3
+    sharedscripts
+    postrotate
+        killall -HUP rsyslogd > /dev/null
+    endscript
+}
+*/1 * * * * root /usr/sbin/logrotate /etc/logrotate.d/haproxy --/etc/cron.d/haproxy
+
+
+--virtualbox
+VBoxManage list vms
+VBoxManage startvm <vm-name> --type headless
+VBoxManage controlvm <vm-name> poweroff
